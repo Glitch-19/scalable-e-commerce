@@ -10,7 +10,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/auth', createProxyMiddleware({
-    target: 'http://localhost:3001',
+    target: 'http://auth-service:3001',
     changeOrigin: true,
     pathRewrite: {
         '^/auth': ''
@@ -18,10 +18,18 @@ app.use('/auth', createProxyMiddleware({
 }));
 
 app.use('/product-service', createProxyMiddleware({
-    target: 'http://localhost:3002',
+    target: 'http://product-service:3002',
     changeOrigin: true,
     pathRewrite: {
         '^/product-service': ''
+    }
+}));
+
+app.use('/order-service', createProxyMiddleware({ 
+    target: 'http://order-service:3003', 
+    changeOrigin: true ,
+    pathRewrite: {
+        '^/order-service': ''
     }
 }));
 

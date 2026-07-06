@@ -1,0 +1,65 @@
+services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth-service
+      - product-service
+      - order-service
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "3001:3001"
+    environment:
+      - PGHOST=auth_db
+      - PGPORT=5432
+      - PGUSER=postgres
+      - PGPASSWORD=password123
+      - PGDATABASE=auth_db
+      - DATABASE_URL=postgresql://postgres:password123@auth_db:5432/auth_db
+      - JWT_SECRET=${JWT_SECRET:-mysecretkey}
+    depends_on:
+      - auth_db
+
+  product-service:
+    build: ./product-service
+    ports:
+      - "3002:3002"
+    environment:
+      - MONGO_URI=mongodb://product_db:27017/products_db
+    depends_on:
+      - product_db
+
+  order-service:
+    build: ./order-service
+    ports:
+      - "3003:3003"
+    environment:
+      - MONGO_URI=mongodb://order_db:27017/orders_db
+      - JWT_SECRET=${JWT_SECRET:-mysecretkey}
+    depends_on:
+      - order_db
+
+  product_db:
+    image: mongo:latest
+    container_name: product_db
+    ports:
+      - "27017:27017"
+
+  order_db:
+    image: mongo:latest
+    container_name: order_db
+    ports:
+      - "27018:27017"
+
+  auth_db:
+    image: postgres:15-alpine
+    container_name: auth_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password123
+      - POSTGRES_DB=auth_db
+    ports:
+      - "5432:5432"
