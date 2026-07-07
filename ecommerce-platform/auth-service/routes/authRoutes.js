@@ -11,12 +11,19 @@ router.post("/register",async(req,res)=>{
     try{
         const {email,password} = req.body;
         const HashedPassword = await bcrypt.hash(password,10);
-        const insertQuery = `INSERT INTO users (email,password_hash) VALUES ($1,$2) RETURNING id,email,role,created_at`;
+        const insertQuery = `INSERT INTO users (email,password_hash,is_verified) VALUES ($1,$2,TRUE) RETURNING id,email,role,is_verified,created_at`;
         const values=[email,HashedPassword];
         const result = await pool.query(insertQuery,values);
+        const user = result.rows[0];
+        const token = jwt.sign(
+            { id: user.id, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
         res.status(201).json({
             message:"User registered successfully!",
-            user: result.rows[0]
+            token,
+            user
         });}
     catch(error){
         console.error('❌ Error registering user:', error);
@@ -33,7 +40,7 @@ router.post("/register",async(req,res)=>{
 router.post("/login",async(req,res)=>{
     try{
         const {email,password}=req.body;
-        const findUserQuery =`SELECT * FROM users WHERE email=$1`;
+        const findUserQuery =`SELECT id,email,password_hash,role,is_verified,created_at FROM users WHERE email=$1`;
         const result =await pool.query(findUserQuery,[email]);
         if(result.rows.length === 0){
             return res.status(401).json({
@@ -41,17 +48,23 @@ router.post("/login",async(req,res)=>{
             })
         }
         const user =result.rows[0];
-        const token= jwt.sign(
-                    {id:user.id,role:user.role},
-                    process.env.JWT_SECRET,
-                    {expiresIn:'1h'}
-                        );
 
         const isPasswordValid = await bcrypt.compare(password,user.password_hash);
         if(!isPasswordValid){
             return res.status(401).json({
                 error:"unauthorized: invalid email or password"
             })}
+        if (!user.is_verified) {
+            return res.status(403).json({
+                error:"account is not verified yet"
+            });
+        }
+
+        const token= jwt.sign(
+                    {id:user.id,role:user.role},
+                    process.env.JWT_SECRET,
+                    {expiresIn:'1h'}
+                        );
         res.status(200).json({
             message:"Login successfull!",
             token:token,
@@ -59,6 +72,7 @@ router.post("/login",async(req,res)=>{
                 id:user.id,
                 email:user.email,
                 role:user.role,
+                is_verified: user.is_verified,
                 created_at:user.created_at
             }
         })

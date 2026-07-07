@@ -16,13 +16,19 @@ CREATE TABLE IF NOT EXISTS users(
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(50) DEFAULT 'Customer',
+    is_verified BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );`;
+
+const addVerificationColumnQuery = `
+ALTER TABLE users
+ADD COLUMN IF NOT EXISTS is_verified BOOLEAN NOT NULL DEFAULT TRUE;`;
 
 async function initializeDatabase() {
     try {
         console.log('⏳ Connecting to database to create tables...');
         await pool.query(createUsersTableQuery);
+        await pool.query(addVerificationColumnQuery);
         console.log('✅ Users table created successfully!');
     } catch (error) {
         console.error('❌ Error creating table:', error);
