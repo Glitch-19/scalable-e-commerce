@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+if (!global.crypto) global.crypto = crypto;
 const express=require('express');
 const Order=require('../models/Order');
 const verifyToken=require('../middleware/auth');
