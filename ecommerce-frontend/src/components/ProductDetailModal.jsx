@@ -4,6 +4,7 @@ import { getProductImages } from "./productImages.js";
 export default function ProductDetailModal({ product, onClose, onAddToCart, onBuyNow, allProducts, onSelectProduct, user }) {
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const images = getProductImages(product);
+  const isOutOfStock = Number(product.stock || 0) <= 0;
 
   const [reviews, setReviews] = useState([
     { id: 1, name: "Alex Mercer", rating: 5, date: "2 days ago", comment: "Absolutely incredible build quality! The RGB lighting is super vibrant and the keys feel amazing." },
@@ -89,7 +90,7 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, onBu
               <div style={{ display: "flex", alignItems: "baseline", gap: "12px", marginBottom: "16px" }}>
                 <span style={{ fontSize: "36px", fontWeight: "700", color: "#b12704" }}>${product.price}</span>
                 <span style={{ fontSize: "18px", color: "#565959", textDecoration: "line-through" }}>${(product.price * 1.25).toFixed(2)}</span>
-                <span style={{ backgroundColor: "#feeccf", color: "#7a2c00", padding: "4px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: "700" }}>Save 20%</span>
+                <span style={{ backgroundColor: isOutOfStock ? "#f3f4f4" : "#feeccf", color: isOutOfStock ? "#565959" : "#7a2c00", padding: "4px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: "700" }}>{isOutOfStock ? "Sold Out" : "Save 20%"}</span>
               </div>
 
               <div style={{ display: "flex", gap: "16px" }}>
@@ -98,18 +99,20 @@ export default function ProductDetailModal({ product, onClose, onAddToCart, onBu
                     onAddToCart(product);
                     onClose();
                   }}
-                  style={{ flex: 1, backgroundColor: "#ffd814", color: "#0f1111", border: "1px solid #fcd200", padding: "14px", borderRadius: "8px", fontSize: "16px", fontWeight: "700", cursor: "pointer" }}
+                  disabled={isOutOfStock}
+                  style={{ flex: 1, backgroundColor: isOutOfStock ? "#d5d9d9" : "#ffd814", color: "#0f1111", border: "1px solid #fcd200", padding: "14px", borderRadius: "8px", fontSize: "16px", fontWeight: "700", cursor: isOutOfStock ? "not-allowed" : "pointer" }}
                 >
-                  Add to Cart
+                  {isOutOfStock ? "OUT OF STOCK" : "Add to Cart"}
                 </button>
                 <button
                   onClick={() => {
                     onBuyNow(product);
                     onClose();
                   }}
-                  style={{ flex: 1, backgroundColor: "#ffa41c", color: "#0f1111", border: "1px solid #e47911", padding: "14px", borderRadius: "8px", fontSize: "16px", fontWeight: "700", cursor: "pointer" }}
+                  disabled={isOutOfStock}
+                  style={{ flex: 1, backgroundColor: isOutOfStock ? "#d5d9d9" : "#ffa41c", color: "#0f1111", border: "1px solid #e47911", padding: "14px", borderRadius: "8px", fontSize: "16px", fontWeight: "700", cursor: isOutOfStock ? "not-allowed" : "pointer" }}
                 >
-                  Buy Now
+                  {isOutOfStock ? "Sold Out" : "Buy Now"}
                 </button>
               </div>
             </div>

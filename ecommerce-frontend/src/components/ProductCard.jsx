@@ -9,6 +9,7 @@ export default function ProductCard({ item, onAddToCart, onBuyNow, onSelect }) {
   const rating = item.rating || 4.8;
   const reviewsCount = item.reviews || 124;
   const oldPrice = (item.price * 1.25).toFixed(2);
+  const isOutOfStock = Number(item.stock || 0) <= 0;
 
   return (
     <div
@@ -29,7 +30,8 @@ export default function ProductCard({ item, onAddToCart, onBuyNow, onSelect }) {
         boxShadow: isHovered ? "0 8px 24px rgba(15, 17, 17, 0.12)" : "0 2px 8px rgba(15, 17, 17, 0.08)",
         transition: "all 0.3s ease",
         transform: isHovered ? "translateY(-5px)" : "translateY(0)",
-        cursor: "pointer"
+        cursor: "pointer",
+        opacity: isOutOfStock ? 0.78 : 1
       }}
     >
       <div style={{ position: "relative", height: "210px", backgroundColor: "#f7f8f8", overflow: "hidden" }}>
@@ -38,9 +40,15 @@ export default function ProductCard({ item, onAddToCart, onBuyNow, onSelect }) {
           alt={item.name}
           style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s ease", transform: isHovered ? "scale(1.08)" : "scale(1)" }}
         />
-        <span style={{ position: "absolute", top: "12px", left: "12px", backgroundColor: "#cc0c39", color: "white", padding: "4px 10px", borderRadius: "4px", fontSize: "11px", fontWeight: "700" }}>
-          20% OFF 🔥
-        </span>
+        {isOutOfStock ? (
+          <span style={{ position: "absolute", top: "12px", left: "12px", backgroundColor: "#0f1111", color: "#ffffff", padding: "4px 10px", borderRadius: "4px", fontSize: "11px", fontWeight: "700" }}>
+            OUT OF STOCK
+          </span>
+        ) : (
+          <span style={{ position: "absolute", top: "12px", left: "12px", backgroundColor: "#cc0c39", color: "white", padding: "4px 10px", borderRadius: "4px", fontSize: "11px", fontWeight: "700" }}>
+            20% OFF 🔥
+          </span>
+        )}
 
         <div style={{ position: "absolute", bottom: "10px", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "6px", zIndex: 10 }} onClick={(e) => e.stopPropagation()}>
           {images.map((img, idx) => (
@@ -83,15 +91,17 @@ export default function ProductCard({ item, onAddToCart, onBuyNow, onSelect }) {
           <div style={{ display: "flex", gap: "10px" }} onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => onAddToCart(item)}
-              style={{ flex: 1, backgroundColor: "#ffd814", color: "#0f1111", border: "1px solid #fcd200", padding: "10px", borderRadius: "8px", fontSize: "13px", fontWeight: "700", cursor: "pointer" }}
+              disabled={isOutOfStock}
+              style={{ flex: 1, backgroundColor: isOutOfStock ? "#d5d9d9" : "#ffd814", color: "#0f1111", border: "1px solid #fcd200", padding: "10px", borderRadius: "8px", fontSize: "13px", fontWeight: "700", cursor: isOutOfStock ? "not-allowed" : "pointer" }}
             >
-              Add to Cart
+              {isOutOfStock ? "OUT OF STOCK" : "Add to Cart"}
             </button>
             <button
               onClick={() => onBuyNow(item)}
-              style={{ flex: 1, backgroundColor: "#ffa41c", color: "#0f1111", border: "1px solid #e47911", padding: "10px", borderRadius: "8px", fontSize: "13px", fontWeight: "700", cursor: "pointer" }}
+              disabled={isOutOfStock}
+              style={{ flex: 1, backgroundColor: isOutOfStock ? "#d5d9d9" : "#ffa41c", color: "#0f1111", border: "1px solid #e47911", padding: "10px", borderRadius: "8px", fontSize: "13px", fontWeight: "700", cursor: isOutOfStock ? "not-allowed" : "pointer" }}
             >
-              Buy Now
+              {isOutOfStock ? "Sold Out" : "Buy Now"}
             </button>
           </div>
         </div>

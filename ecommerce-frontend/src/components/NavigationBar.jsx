@@ -1,4 +1,4 @@
-export default function NavigationBar({ user, onLogout, searchQuery, onSearchChange, onClearSearch, onOpenLogin, onOpenCart, totalItemsCount, onResetFilters }) {
+export default function NavigationBar({ user, onLogout, searchQuery, onSearchChange, onClearSearch, onOpenLogin, onOpenCart, onOpenProfile, onOpenAdmin, isAdmin, totalItemsCount, onResetFilters }) {
   return (
     <nav style={{ backgroundColor: "#131921", borderBottom: "1px solid #232f3e", padding: "14px 28px", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, zIndex: 100, boxShadow: "0 2px 10px rgba(0,0,0,0.15)" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "12px", cursor: "pointer" }} onClick={onResetFilters}>
@@ -26,8 +26,15 @@ export default function NavigationBar({ user, onLogout, searchQuery, onSearchCha
 
       <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
         {user ? (
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", backgroundColor: "#232f3e", color: "#ffffff", border: "1px solid #37475a", padding: "7px 14px", borderRadius: "8px", fontSize: "13px" }}>
-            <span>👤 <strong>{user.email.split("@")[0]}</strong></span>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <button onClick={onOpenProfile} style={{ backgroundColor: "#232f3e", color: "#ffffff", border: "1px solid #37475a", padding: "7px 14px", borderRadius: "8px", fontSize: "13px", cursor: "pointer" }}>
+              👤 <strong>{user.email.split("@")[0]}</strong>
+            </button>
+            {isAdmin && (
+              <button onClick={onOpenAdmin} style={{ backgroundColor: "#0f1111", color: "#febd69", border: "1px solid #37475a", padding: "7px 14px", borderRadius: "8px", fontSize: "13px", cursor: "pointer", fontWeight: "700" }}>
+                Admin
+              </button>
+            )}
             <button onClick={onLogout} style={{ background: "none", border: "none", color: "#febd69", cursor: "pointer", fontWeight: "bold", marginLeft: "4px" }}>Logout</button>
           </div>
         ) : (

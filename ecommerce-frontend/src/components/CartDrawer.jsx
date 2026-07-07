@@ -57,7 +57,7 @@ export default function CartDrawer({ cart, onClose, updateQuantity, totalCartPri
               disabled={isCheckingOut}
               style={{ width: "100%", backgroundColor: isCheckingOut ? "#b9c0c6" : user ? "#ffd814" : "#ffa41c", color: "#0f1111", border: "1px solid #d5d9d9", padding: "16px", borderRadius: "8px", fontSize: "16px", fontWeight: "700", cursor: isCheckingOut ? "not-allowed" : "pointer", boxShadow: "none", transition: "all 0.2s" }}
             >
-              {isCheckingOut ? "⏳ Transmitting to Order DB..." : user ? "⚡ Execute Authenticated Order" : "🔑 Login to Execute Order"}
+              {isCheckingOut ? "⏳ Processing Payment..." : user ? "💳 Proceed to Payment" : "🔑 Login to Checkout"}
             </button>
           </div>
         )}
