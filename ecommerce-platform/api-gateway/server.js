@@ -1,7 +1,10 @@
 const express = require('express');
+
+const cors = require('cors');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
+app.use(cors()); // 👈 2. Open the VIP gates to let React (Port 5173) in!
 
 
 app.use((req, res, next) => {
